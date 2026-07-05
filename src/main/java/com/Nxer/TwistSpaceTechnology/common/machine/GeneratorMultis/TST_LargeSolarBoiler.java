@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.Nxer.TwistSpaceTechnology.common.machine.UI.MUI2.TST_Gui_LargeSolarBoiler;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -76,6 +78,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReason;
 import gregtech.common.blocks.BlockCasings1;
 import gregtech.common.blocks.BlockCasings2;
+import org.jetbrains.annotations.NotNull;
 
 public class TST_LargeSolarBoiler extends GTCM_MultiMachineBase<TST_LargeSolarBoiler> {
 
@@ -119,6 +122,14 @@ public class TST_LargeSolarBoiler extends GTCM_MultiMachineBase<TST_LargeSolarBo
     private int tierPipeCasing = -1;
     private int tierFireBoxCasing = -1;
     private int tierMachineCasing = -1;
+
+    public double getHeat() {
+        return heat;
+    }
+
+    public double getCalcification() {
+        return calcification;
+    }
 
     // region Processing Logic
     @Nonnull
@@ -709,62 +720,63 @@ public class TST_LargeSolarBoiler extends GTCM_MultiMachineBase<TST_LargeSolarBo
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
     }
 
-    @Override
-    protected void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        super.drawTexts(screenElements, inventorySlot);
-        screenElements.widget(
-            new TextWidget().setStringSupplier(
-                () -> EnumChatFormatting.WHITE
-                    // #tr TST_LargeSolarBoiler.gui.02
-                    // # Heat:
-                    // #zh_CN 热量:
-                    + TextEnums.tr("TST_LargeSolarBoiler.gui.02")
-                    + " "
-                    + EnumChatFormatting.GOLD
-                    + numberFormat.format((int) (heat * 100))
-                    + "% "
-                    + EnumChatFormatting.RESET))
-            .widget(
-                new TextWidget().setStringSupplier(
-                    () -> EnumChatFormatting.WHITE
-                        // #tr TST_LargeSolarBoiler.gui.03
-                        // # Calcification Level:
-                        // #zh_CN 钙化程度:
-                        + TextEnums.tr("TST_LargeSolarBoiler.gui.03")
-                        + " "
-                        + EnumChatFormatting.GOLD
-                        + numberFormat.format((int) (calcification * 100))
-                        + "% "
-                        + EnumChatFormatting.RESET))
-            .widget(new FakeSyncWidget.DoubleSyncer(() -> heat, val -> heat = val))
-            .widget(new FakeSyncWidget.DoubleSyncer(() -> calcification, val -> calcification = val));;
+//    @Override
+//    protected void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+//        super.drawTexts(screenElements, inventorySlot);
+//        screenElements.widget(
+//            new TextWidget().setStringSupplier(
+//                () -> EnumChatFormatting.WHITE
+//                    + TextEnums.tr("TST_LargeSolarBoiler.gui.02")
+//                    + " "
+//                    + EnumChatFormatting.GOLD
+//                    + numberFormat.format((int) (heat * 100))
+//                    + "% "
+//                    + EnumChatFormatting.RESET))
+//            .widget(
+//                new TextWidget().setStringSupplier(
+//                    () -> EnumChatFormatting.WHITE
+//                        + TextEnums.tr("TST_LargeSolarBoiler.gui.03")
+//                        + " "
+//                        + EnumChatFormatting.GOLD
+//                        + numberFormat.format((int) (calcification * 100))
+//                        + "% "
+//                        + EnumChatFormatting.RESET))
+//            .widget(new FakeSyncWidget.DoubleSyncer(() -> heat, val -> heat = val))
+//            .widget(new FakeSyncWidget.DoubleSyncer(() -> calcification, val -> calcification = val));;
+//    }
+
+    public void onClickClearingButton() {
+        calcification = 0;
+        runningTicks = 0;
     }
 
     @Override
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        super.addUIWidgets(builder, buildContext);
-
-        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-            if (clickData.mouseButton == 0) {
-                calcification = 0;
-                runningTicks = 0;
-            }
-        })
-            .setPlayClickSound(true)
-            .setBackground(
-                () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD,
-                    GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT })
-            .addTooltip(
-                EnumChatFormatting.WHITE
-                    // #tr TST_LargeSolarBoiler.gui.01
-                    // # Press to clear the machine
-                    // #zh_CN 点击以清洁机器的钙化
-                    + TextEnums.tr("TST_LargeSolarBoiler.gui.01")
-                    + EnumChatFormatting.RESET)
-            .setTooltipShowUpDelay(TOOLTIP_DELAY)
-            .setPos(new Pos2d(174, 91))
-            .setSize(16, 16));
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new TST_Gui_LargeSolarBoiler(this);
     }
+
+//    @Override
+//    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+//        super.addUIWidgets(builder, buildContext);
+//
+//        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+//            if (clickData.mouseButton == 0) {
+//                calcification = 0;
+//                runningTicks = 0;
+//            }
+//        })
+//            .setPlayClickSound(true)
+//            .setBackground(
+//                () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD,
+//                    GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT })
+//            .addTooltip(
+//                EnumChatFormatting.WHITE
+//                    + TextEnums.tr("TST_LargeSolarBoiler.gui.01")
+//                    + EnumChatFormatting.RESET)
+//            .setTooltipShowUpDelay(TOOLTIP_DELAY)
+//            .setPos(new Pos2d(174, 91))
+//            .setSize(16, 16));
+//    }
 
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
